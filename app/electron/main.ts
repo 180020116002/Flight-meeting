@@ -107,7 +107,7 @@ function createOverlayWindow(): BrowserWindow {
   }
 
   if (app.isPackaged) {
-    win.loadFile(path.join(__dirname, '../dist/index.html'))
+    win.loadFile(path.join(__dirname, '../renderer/index.html'))
   } else {
     win.loadURL('http://localhost:5173')
   }
@@ -140,7 +140,7 @@ function createSettingsWindow(): BrowserWindow {
   }
 
   if (app.isPackaged) {
-    win.loadFile(path.join(__dirname, '../dist/settings.html'))
+    win.loadFile(path.join(__dirname, '../renderer/settings.html'))
   } else {
     win.loadURL('http://localhost:5173/settings.html')
   }

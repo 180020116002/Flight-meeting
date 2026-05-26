@@ -30,8 +30,11 @@ export default defineConfig({
     }
   },
   renderer: {
+    root: resolve(__dirname, '.'),
     plugins: [react()],
     build: {
+      outDir: resolve(__dirname, 'out/renderer'),
+      emptyOutDir: true,
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'index.html'),
