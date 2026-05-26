@@ -68,8 +68,8 @@ nsis:
   createStartMenuShortcut: true
   shortcutName: Flyby
 
-# Auto-update — points to this GitHub repo's releases
-publish:
-  provider: github
-  owner: 180020116002
-  repo: Flight-meeting
+# Auto-update (wire up after first signed release)
+# publish:
+#   provider: github
+#   owner: 180020116002
+#   repo: Flight-meeting

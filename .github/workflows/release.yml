@@ -1,13 +1,12 @@
 name: Build & Release
 
-# Triggers on any tag like v1.0.0, v1.2.3-beta, etc.
 on:
   push:
     tags:
       - 'v*'
 
 jobs:
-  # ─── macOS → produces .dmg ─────────────────────────────────────────────────
+  # ─── macOS → .dmg ──────────────────────────────────────────────────────────
   build-mac:
     runs-on: macos-latest
     steps:
@@ -20,36 +19,41 @@ jobs:
       - name: Generate icon assets
         run: python3 scripts/gen-icons.py
 
-      - name: Install app dependencies
-        run: npm install
-        working-directory: app
+      # Install from workspace root so npm workspaces resolves correctly
+      - name: Install dependencies (workspace root)
+        run: npm install --no-audit --no-fund
 
+      # electron-vite must run from app/ (it reads electron.vite.config.ts there)
       - name: Build renderer + main process
         run: npx electron-vite build
         working-directory: app
 
+      - name: List build output
+        run: ls -R app/out
+
       - name: Package macOS DMG (unsigned)
-        run: >
-          npx electron-builder --mac dmg --publish never
-          --config.mac.hardenedRuntime=false
-          --config.mac.entitlements=null
-          --config.mac.entitlementsInherit=null
-          --config.mac.gatekeeperAssess=false
+        run: |
+          npx electron-builder --mac dmg --publish never \
+            --config.mac.hardenedRuntime=false \
+            --config.mac.gatekeeperAssess=false
         working-directory: app
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
           USE_HARD_LINKS: false
+          DEBUG: electron-builder
+
+      - name: List release output
+        if: always()
+        run: ls -la app/release/ || echo "release/ is empty"
 
       - name: Upload DMG artifact
         uses: actions/upload-artifact@v4
         with:
           name: mac-dmg
-          path: |
-            app/release/*.dmg
-            app/release/*.zip
+          path: app/release/*.dmg
           if-no-files-found: error
 
-  # ─── Windows → produces NSIS .exe ─────────────────────────────────────────
+  # ─── Windows → NSIS .exe ───────────────────────────────────────────────────
   build-win:
     runs-on: windows-latest
     steps:
@@ -62,19 +66,26 @@ jobs:
       - name: Generate icon assets
         run: python scripts/gen-icons.py
 
-      - name: Install app dependencies
-        run: npm install
-        working-directory: app
+      - name: Install dependencies (workspace root)
+        run: npm install --no-audit --no-fund
 
       - name: Build renderer + main process
         run: npx electron-vite build
         working-directory: app
+
+      - name: List build output
+        run: dir app\out /s /b
 
       - name: Package Windows installer (unsigned)
         run: npx electron-builder --win nsis --publish never
         working-directory: app
         env:
           USE_HARD_LINKS: false
+          DEBUG: electron-builder
+
+      - name: List release output
+        if: always()
+        run: dir app\release /b || echo "release\ is empty"
 
       - name: Upload EXE artifact
         uses: actions/upload-artifact@v4
@@ -83,7 +94,7 @@ jobs:
           path: app/release/*.exe
           if-no-files-found: error
 
-  # ─── Create GitHub Release with both artifacts ─────────────────────────────
+  # ─── GitHub Release ─────────────────────────────────────────────────────────
   release:
     needs: [build-mac, build-win]
     runs-on: ubuntu-latest
@@ -105,7 +116,7 @@ jobs:
           name: win-exe
           path: dist/win
 
-      - name: List built files
+      - name: List artifacts
         run: find dist -type f | sort
 
       - name: Create GitHub Release
@@ -116,9 +127,9 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true
           body: |
-            ## Flyby ${{ github.ref_name }}
+            ## Flyby ${{ github.ref_name }} ✈️
 
-            A little airplane flies across your screen 5 minutes before every meeting. ✈️
+            A little airplane flies across your screen 5 minutes before every meeting.
 
             ### Download
 
@@ -127,15 +138,11 @@ jobs:
             | macOS (Apple Silicon + Intel) | `Flyby-*.dmg` |
             | Windows 10/11 | `Flyby Setup *.exe` |
 
-            > **macOS note:** App is unsigned. Right-click → Open to bypass Gatekeeper on first launch.
-            > **Windows note:** Click "More info → Run anyway" on SmartScreen if prompted.
-
-            ### What's new
-            See the commit history for changes in this release.
+            > **macOS:** Right-click → Open to bypass Gatekeeper on first launch (app is unsigned).
+            > **Windows:** Click "More info → Run anyway" on SmartScreen if prompted.
 
           files: |
             dist/mac/*.dmg
-            dist/mac/*.zip
             dist/win/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
