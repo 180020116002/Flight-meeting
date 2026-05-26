@@ -15,7 +15,7 @@ extraResources:
   - from: resources/
     to: resources/
     filter:
-      - "**/*"
+      - "*.png"
 
 # macOS configuration
 mac:
@@ -29,14 +29,13 @@ mac:
         - arm64
         - x64
   category: public.app-category.productivity
-  hardenedRuntime: true
+  hardenedRuntime: false
   gatekeeperAssess: false
-  entitlements: build/entitlements.mac.plist
-  entitlementsInherit: build/entitlements.mac.plist
-  # TODO: Set up code signing
+  # TODO: Enable for signed/notarized builds:
+  # hardenedRuntime: true
+  # entitlements: build/entitlements.mac.plist
+  # entitlementsInherit: build/entitlements.mac.plist
   # identity: "Developer ID Application: Your Name (TEAM_ID)"
-  # notarize:
-  #   teamId: YOUR_TEAM_ID
 
 dmg:
   title: "${productName} ${version}"
