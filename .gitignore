@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Electron build output
+app/dist/
+app/dist-electron/
+app/release/
+
+# Next.js build output
+landing/.next/
+landing/out/
+
+# Environment files
+app/.env
+landing/.env.local
+landing/.env.production
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/

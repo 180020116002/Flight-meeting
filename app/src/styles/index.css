@@ -1,0 +1,223 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Variables ──────────────────────────────────────────────────────────── */
+
+:root {
+  --airplane-pink: #FFB6C1;
+  --airplane-blue: #AEC6CF;
+  --airplane-mint: #B5EAD7;
+  --airplane-peach: #FFDAB9;
+  --airplane-lavender: #C3B1E1;
+
+  --pill-bg: rgba(255, 182, 193, 0.92);
+  --pill-text: #4a2c3a;
+  --pill-shadow: 0 8px 32px rgba(255, 100, 130, 0.25);
+  --pill-border: rgba(255, 255, 255, 0.6);
+}
+
+/* ─── Base Reset ─────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ─── Airplane Flyby Animation ───────────────────────────────────────────────── */
+
+@keyframes airplane-fly {
+  0% {
+    transform: translateX(-140px) translateY(0px);
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  20% {
+    transform: translateX(20vw) translateY(-18px);
+  }
+  40% {
+    transform: translateX(42vw) translateY(-32px);
+  }
+  60% {
+    transform: translateX(62vw) translateY(-24px);
+  }
+  80% {
+    transform: translateX(82vw) translateY(-10px);
+  }
+  97% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vw + 140px)) translateY(0px);
+    opacity: 0;
+  }
+}
+
+/* ─── Pill Float-up Animation ───────────────────────────────────────────────── */
+
+@keyframes pill-float {
+  0% {
+    transform: translateY(24px) scale(0.92);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-4px) scale(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0px) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pill-dismiss {
+  0% {
+    transform: translateY(0px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(16px) scale(0.92);
+    opacity: 0;
+  }
+}
+
+/* ─── Contrail Dot Animation ─────────────────────────────────────────────────── */
+
+@keyframes contrail-dot {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+/* ─── Animation Classes ──────────────────────────────────────────────────────── */
+
+.animate-airplane-fly {
+  animation: airplane-fly 5.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-airplane-fly-slow {
+  animation: airplane-fly 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-airplane-fly-fast {
+  animation: airplane-fly 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-pill-float {
+  animation: pill-float 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-pill-dismiss {
+  animation: pill-dismiss 0.3s ease-in forwards;
+}
+
+.animate-contrail-1 {
+  animation: contrail-dot 0.8s ease-out 0s forwards;
+}
+
+.animate-contrail-2 {
+  animation: contrail-dot 0.8s ease-out 0.1s forwards;
+}
+
+.animate-contrail-3 {
+  animation: contrail-dot 0.8s ease-out 0.2s forwards;
+}
+
+/* ─── Overlay Utilities ──────────────────────────────────────────────────────── */
+
+.overlay-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.overlay-interactive {
+  pointer-events: auto;
+}
+
+/* ─── Pill Styles ────────────────────────────────────────────────────────────── */
+
+.meeting-pill {
+  background: var(--pill-bg);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid var(--pill-border);
+  box-shadow: var(--pill-shadow);
+  border-radius: 9999px;
+  color: var(--pill-text);
+}
+
+/* ─── Scrollbar Styles ───────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ─── Settings Window ────────────────────────────────────────────────────────── */
+
+.settings-drag-region {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.settings-no-drag {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/* ─── Custom Range Slider ────────────────────────────────────────────────────── */
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: #e2e8f0;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FFB6C1;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease;
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+input[type='range']:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(255, 182, 193, 0.4);
+}

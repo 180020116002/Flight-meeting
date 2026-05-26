@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Custom Properties ─────────────────────────────────── */
+:root {
+  --color-bg: #0A0A0B;
+  --color-mid: #111113;
+  --color-pink: #FFB6C1;
+  --color-pink-dim: rgba(255, 182, 193, 0.15);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text-muted: rgba(255, 255, 255, 0.45);
+  --font-serif: var(--font-serif, 'Georgia', serif);
+  --font-sans: var(--font-sans, 'system-ui', sans-serif);
+}
+
+/* ── Base Reset ─────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: #ffffff;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── Custom Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 182, 193, 0.25);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 182, 193, 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 182, 193, 0.25) var(--color-bg);
+}
+
+/* ── Selection ──────────────────────────────────────────── */
+::selection {
+  background-color: rgba(255, 182, 193, 0.3);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background-color: rgba(255, 182, 193, 0.3);
+  color: #ffffff;
+}
+
+/* ── Typography Utilities ───────────────────────────────── */
+.font-serif {
+  font-family: var(--font-serif), 'Instrument Serif', Georgia, serif;
+}
+
+.font-sans {
+  font-family: var(--font-sans), 'Inter', system-ui, sans-serif;
+}
+
+/* ── Gradient Utilities ─────────────────────────────────── */
+.glow-pink {
+  background: radial-gradient(
+    ellipse 60% 40% at 20% 20%,
+    rgba(255, 182, 193, 0.12) 0%,
+    transparent 70%
+  );
+}
+
+.glow-pink-center {
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 50%,
+    rgba(255, 182, 193, 0.08) 0%,
+    transparent 70%
+  );
+}
+
+/* ── Noise Texture Overlay ──────────────────────────────── */
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.04;
+  z-index: 0;
+}
+
+/* ── Utility: Subtle card border ────────────────────────── */
+.card-border {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Hover link underline animation ─────────────────────── */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--color-pink);
+  transition: width 0.3s ease;
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* ── Windows download button hover (server component safe) ── */
+.win-dl-btn:hover {
+  background: rgba(255, 182, 193, 0.08) !important;
+  border-color: rgba(255, 182, 193, 0.7) !important;
+}
+
+/* ── Footer social icon hover ─────────────────────────────── */
+.footer-social-link {
+  color: rgba(255, 255, 255, 0.35);
+}
+.footer-social-link:hover {
+  color: #FFB6C1;
+}
+
+/* ── Section spacing ────────────────────────────────────── */
+.section-pad {
+  padding-top: 7rem;
+  padding-bottom: 7rem;
+}
+
+@media (max-width: 768px) {
+  .section-pad {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+}
+
+/* ── Hero airplane trail ────────────────────────────────── */
+@keyframes heroFloat {
+  0%   { transform: translateY(0px) rotate(-2deg); }
+  50%  { transform: translateY(-16px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(-2deg); }
+}
+
+@keyframes trailDots {
+  0%   { opacity: 0.2; transform: scaleX(0.5); }
+  50%  { opacity: 0.6; transform: scaleX(1); }
+  100% { opacity: 0.2; transform: scaleX(0.5); }
+}
+
+.animate-hero-float {
+  animation: heroFloat 5s ease-in-out infinite;
+}
+
+.animate-trail-dots {
+  animation: trailDots 5s ease-in-out infinite;
+  transform-origin: right center;
+}

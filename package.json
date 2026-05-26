@@ -1,0 +1,13 @@
+{
+  "name": "flyby",
+  "private": true,
+  "workspaces": ["app", "landing"],
+  "scripts": {
+    "dev:app": "npm run dev --workspace=app",
+    "dev:landing": "npm run dev --workspace=landing",
+    "build:app:mac": "npm run build:mac --workspace=app",
+    "build:app:win": "npm run build:win --workspace=app",
+    "build:landing": "npm run build --workspace=landing"
+  },
+  "engines": { "node": ">=20" }
+}

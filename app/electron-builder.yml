@@ -1,0 +1,82 @@
+appId: com.flyby.app
+productName: Flyby
+copyright: Copyright © 2024 Flyby
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - "!**/node_modules/**"
+  - "!**/*.map"
+
+extraResources:
+  - from: resources/
+    to: resources/
+    filter:
+      - "**/*"
+
+# macOS configuration
+mac:
+  target:
+    - target: dmg
+      arch:
+        - arm64
+        - x64
+    - target: zip
+      arch:
+        - arm64
+        - x64
+  category: public.app-category.productivity
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  # TODO: Set up code signing
+  # identity: "Developer ID Application: Your Name (TEAM_ID)"
+  # notarize:
+  #   teamId: YOUR_TEAM_ID
+
+dmg:
+  title: "${productName} ${version}"
+  background: build/dmg-background.png
+  iconSize: 100
+  window:
+    width: 540
+    height: 380
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+# Windows configuration
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  # TODO: Set up code signing
+  # certificateFile: path/to/cert.pfx
+  # certificatePassword: YOUR_CERT_PASSWORD
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Flyby
+
+# Auto-update configuration (stub — wire up after setting up GitHub releases)
+publish:
+  provider: github
+  owner: YOUR_GITHUB_USERNAME
+  repo: flyby
+  # releaseType: release
