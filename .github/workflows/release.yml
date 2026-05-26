@@ -1,0 +1,133 @@
+name: Build & Release
+
+# Triggers on any tag like v1.0.0, v1.2.3-beta, etc.
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  # ─── macOS → produces .dmg ─────────────────────────────────────────────────
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate icon assets
+        run: python3 scripts/gen-icons.py
+
+      - name: Install app dependencies
+        run: npm install
+        working-directory: app
+
+      - name: Build renderer + main process
+        run: npx electron-vite build
+        working-directory: app
+
+      - name: Package macOS DMG (unsigned)
+        run: npx electron-builder --mac --publish never
+        working-directory: app
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-dmg
+          path: |
+            app/release/*.dmg
+            app/release/*.zip
+          if-no-files-found: error
+
+  # ─── Windows → produces NSIS .exe ─────────────────────────────────────────
+  build-win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate icon assets
+        run: python scripts/gen-icons.py
+
+      - name: Install app dependencies
+        run: npm install
+        working-directory: app
+
+      - name: Build renderer + main process
+        run: npx electron-vite build
+        working-directory: app
+
+      - name: Package Windows installer (unsigned)
+        run: npx electron-builder --win --publish never
+        working-directory: app
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-exe
+          path: app/release/*.exe
+          if-no-files-found: error
+
+  # ─── Create GitHub Release with both artifacts ─────────────────────────────
+  release:
+    needs: [build-mac, build-win]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mac-dmg
+          path: dist/mac
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: win-exe
+          path: dist/win
+
+      - name: List built files
+        run: find dist -type f | sort
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Flyby ${{ github.ref_name }}"
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+          body: |
+            ## Flyby ${{ github.ref_name }}
+
+            A little airplane flies across your screen 5 minutes before every meeting. ✈️
+
+            ### Download
+
+            | Platform | File |
+            |---|---|
+            | macOS (Apple Silicon + Intel) | `Flyby-*.dmg` |
+            | Windows 10/11 | `Flyby Setup *.exe` |
+
+            > **macOS note:** App is unsigned. Right-click → Open to bypass Gatekeeper on first launch.
+            > **Windows note:** Click "More info → Run anyway" on SmartScreen if prompted.
+
+            ### What's new
+            See the commit history for changes in this release.
+
+          files: |
+            dist/mac/*.dmg
+            dist/mac/*.zip
+            dist/win/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

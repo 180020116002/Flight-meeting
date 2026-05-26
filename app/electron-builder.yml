@@ -41,7 +41,6 @@ mac:
 
 dmg:
   title: "${productName} ${version}"
-  background: build/dmg-background.png
   iconSize: 100
   window:
     width: 540
@@ -67,16 +66,12 @@ win:
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
-  installerIcon: build/icon.ico
-  uninstallerIcon: build/icon.ico
-  installerHeaderIcon: build/icon.ico
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: Flyby
 
-# Auto-update configuration (stub — wire up after setting up GitHub releases)
+# Auto-update — points to this GitHub repo's releases
 publish:
   provider: github
-  owner: YOUR_GITHUB_USERNAME
-  repo: flyby
-  # releaseType: release
+  owner: 180020116002
+  repo: Flight-meeting
