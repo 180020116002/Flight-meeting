@@ -5,9 +5,13 @@ import HowItWorks from './components/HowItWorks'
 import FAQ from './components/FAQ'
 import Footer from './components/Footer'
 
-// InteractiveDemo is a client-only component (uses browser APIs + Framer Motion)
+// Client-only components (Framer Motion / scroll APIs)
 const InteractiveDemo = dynamic(
   () => import('./components/InteractiveDemo'),
+  { ssr: false }
+)
+const ScrollFlyby = dynamic(
+  () => import('./components/ScrollFlyby'),
   { ssr: false }
 )
 
@@ -19,6 +23,9 @@ export default function Home() {
 
       {/* ── Why section ──────────────────────────── */}
       <WhySection />
+
+      {/* ── Scroll-driven flyby + download CTA ───── */}
+      <ScrollFlyby />
 
       {/* ── Interactive demo ─────────────────────── */}
       <InteractiveDemo />
