@@ -26,11 +26,12 @@ export default function InteractiveDemo() {
     setAnimState('playing')
     setShowPill(false)
 
-    pillTimerRef.current = setTimeout(() => setShowPill(true), 1500)
+    // Pill appears once the plane is mid-screen (at ~1s into a 4.5s flight)
+    pillTimerRef.current = setTimeout(() => setShowPill(true), 900)
     doneTimerRef.current = setTimeout(() => {
       setAnimState('done')
       setShowPill(false)
-    }, 3200)
+    }, 4500)
   }
 
   function handleReplay() {
@@ -145,34 +146,67 @@ export default function InteractiveDemo() {
                 <motion.div
                   key="airplane"
                   className="absolute"
-                  style={{ top: '35%', translateY: '-50%' }}
-                  initial={{ x: '-15%', opacity: 1 }}
-                  animate={{ x: '115%', opacity: 1 }}
+                  style={{ top: '38%', translateY: '-50%', left: 0 }}
+                  initial={{ x: '-130px' }}
+                  animate={{ x: '110vw' }}
                   exit={{ opacity: 0 }}
                   transition={{
-                    duration: 2.8,
-                    ease: [0.25, 0.1, 0.25, 1],
+                    duration: 4.5,
+                    ease: [0.12, 0, 0.48, 1],
                   }}
                 >
-                  {/* Trail dots */}
-                  <div
-                    className="absolute right-full top-1/2 -translate-y-1/2 flex gap-1.5 pr-2"
-                    style={{ pointerEvents: 'none' }}
-                  >
-                    {Array.from({ length: 10 }).map((_, i) => (
+                  {/* Airplane + trailing pill attached to its tail */}
+                  <div className="relative inline-block">
+
+                    {/* Trailing group: pill + dots — anchored to LEFT of airplane (tail side) */}
+                    <motion.div
+                      className="absolute top-1/2 right-full -translate-y-1/2 flex items-center"
+                      style={{ paddingRight: 8 }}
+                      animate={{ opacity: showPill ? 1 : 0, x: showPill ? 0 : 18 }}
+                      transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+                    >
+                      {/* Pink notification pill */}
                       <div
-                        key={i}
-                        className="rounded-full"
+                        className="flex items-center gap-2 rounded-full whitespace-nowrap mr-2"
                         style={{
-                          width: 4,
-                          height: 4,
-                          background: selectedColor,
-                          opacity: Math.max(0.05, 0.4 - i * 0.035),
+                          padding: '7px 16px 7px 12px',
+                          background: 'rgba(255, 182, 193, 0.97)',
+                          color: '#1a0a0f',
+                          fontWeight: 600,
+                          fontSize: '0.8rem',
+                          boxShadow:
+                            '0 4px 20px rgba(255,182,193,0.45), 0 2px 8px rgba(0,0,0,0.3)',
                         }}
-                      />
-                    ))}
+                      >
+                        <span>✈️</span>
+                        <span>Meeting with Drew in 5 min</span>
+                      </div>
+
+                      {/* Dots: dim on left (near pill) → bright on right (near tail) */}
+                      <div className="flex items-center gap-[4px]">
+                        {[
+                          { size: 3,   op: 0.20 },
+                          { size: 3.5, op: 0.28 },
+                          { size: 4,   op: 0.38 },
+                          { size: 4.5, op: 0.50 },
+                          { size: 5,   op: 0.62 },
+                        ].map((dot, i) => (
+                          <div
+                            key={i}
+                            className="rounded-full flex-shrink-0"
+                            style={{
+                              width: dot.size,
+                              height: dot.size,
+                              background: selectedColor,
+                              opacity: dot.op,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </motion.div>
+
+                    <AirplaneSVG color={selectedColor} size={110} />
                   </div>
-                  <AirplaneSVG color={selectedColor} size={120} />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -210,28 +244,6 @@ export default function InteractiveDemo() {
               </div>
             )}
 
-            {/* Notification pill */}
-            <AnimatePresence>
-              {showPill && (
-                <motion.div
-                  key="pill"
-                  className="absolute top-5 right-5 flex items-center gap-2.5 rounded-full px-4 py-2.5 text-sm font-medium text-white"
-                  style={{
-                    background: 'rgba(20,20,28,0.92)',
-                    border: '1px solid rgba(255,182,193,0.3)',
-                    backdropFilter: 'blur(12px)',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04)',
-                  }}
-                  initial={{ opacity: 0, y: -12, scale: 0.92 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                  transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
-                >
-                  <span style={{ color: '#FFB6C1' }}>✈️</span>
-                  <span>Meeting with Andrew in 5 min</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
         </div>
 

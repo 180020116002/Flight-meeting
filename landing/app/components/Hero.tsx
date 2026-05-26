@@ -1,128 +1,14 @@
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 
 const MAC_URL = process.env.NEXT_PUBLIC_DOWNLOAD_MAC ?? '#'
 const WIN_URL = process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? '#'
 
-function HeroAirplane() {
-  return (
-    <div className="relative flex items-center justify-center w-full h-full min-h-[320px]">
-      {/* Soft glow behind airplane */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse 70% 50% at 55% 45%, rgba(255,182,193,0.13) 0%, transparent 75%)',
-        }}
-      />
-
-      {/* Dotted flight trail */}
-      <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex items-center px-4 animate-trail-dots pointer-events-none">
-        <div className="flex gap-2 ml-4">
-          {Array.from({ length: 18 }).map((_, i) => (
-            <div
-              key={i}
-              className="rounded-full bg-pastel-pink"
-              style={{
-                width: 4,
-                height: 4,
-                opacity: Math.max(0.08, 0.45 - i * 0.022),
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* The airplane SVG rendered inline (server component safe) */}
-      <div className="relative z-10 animate-hero-float drop-shadow-2xl">
-        {/* Inline SVG airplane — no client component needed */}
-        <svg
-          width="220"
-          height="106"
-          viewBox="0 0 160 77"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-label="Flyby airplane illustration"
-          role="img"
-        >
-          <defs>
-            <filter id="hero-shadow" x="-10%" y="-20%" width="130%" height="150%">
-              <feDropShadow dx="0" dy="6" stdDeviation="8" floodColor="rgba(255,182,193,0.25)" />
-            </filter>
-            <linearGradient id="hero-fuselage" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#FFB6C1" stopOpacity="0.85" />
-              <stop offset="60%" stopColor="#FFB6C1" />
-              <stop offset="100%" stopColor="#FFB6C1" stopOpacity="0.7" />
-            </linearGradient>
-            <linearGradient id="hero-wing" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FFB6C1" />
-              <stop offset="100%" stopColor="#FFB6C1" stopOpacity="0.7" />
-            </linearGradient>
-          </defs>
-          <g filter="url(#hero-shadow)">
-            <path d="M18 38 L26 18 L36 32 Z" fill="#FFB6C1" opacity="0.9" />
-            <path d="M14 44 L38 42 L36 49 L16 50 Z" fill="#FFB6C1" opacity="0.85" />
-            <path
-              d="M22 36 C22 36 90 26 130 30 C142 31 152 35 155 40 C152 45 142 49 130 50 C90 54 22 44 22 44 Z"
-              fill="url(#hero-fuselage)"
-            />
-            <path
-              d="M130 30 C142 31 152 35 155 40 C152 45 142 49 130 50 C136 44 138 40 136 36 Z"
-              fill="#FFB6C1"
-              opacity="0.95"
-            />
-            <path d="M55 44 L60 44 L75 66 L45 64 Z" fill="url(#hero-wing)" />
-            <path d="M60 36 L65 36 L52 14 L38 16 Z" fill="url(#hero-wing)" />
-            <ellipse cx="62" cy="55" rx="7" ry="4.5" fill="#1a1a1f" opacity="0.7" />
-            <ellipse cx="65" cy="55" rx="5" ry="3.5" fill="#FFB6C1" opacity="0.6" />
-            <ellipse cx="136" cy="38" rx="6.5" ry="4.5" fill="rgba(180,230,255,0.85)" />
-            <ellipse cx="125" cy="37.5" rx="5" ry="3.5" fill="rgba(180,230,255,0.85)" opacity="0.8" />
-            <ellipse cx="110" cy="37" rx="3" ry="2.5" fill="rgba(180,230,255,0.85)" opacity="0.55" />
-            <ellipse cx="99" cy="37" rx="3" ry="2.5" fill="rgba(180,230,255,0.85)" opacity="0.55" />
-            <ellipse cx="88" cy="37.5" rx="3" ry="2.5" fill="rgba(180,230,255,0.85)" opacity="0.45" />
-            <ellipse cx="77" cy="38" rx="3" ry="2.5" fill="rgba(180,230,255,0.85)" opacity="0.4" />
-          </g>
-        </svg>
-
-        {/* Notification pill floating above the airplane */}
-        <div
-          className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium text-white border"
-          style={{
-            background: 'rgba(17,17,19,0.9)',
-            borderColor: 'rgba(255,182,193,0.35)',
-            backdropFilter: 'blur(8px)',
-            boxShadow: '0 2px 16px rgba(255,182,193,0.15)',
-          }}
-        >
-          ✈️ &nbsp;Meeting with Andrew in 5 min
-        </div>
-      </div>
-
-      {/* Subtle orbit rings */}
-      <div
-        className="absolute rounded-full pointer-events-none"
-        style={{
-          width: 280,
-          height: 280,
-          border: '1px dashed rgba(255,182,193,0.1)',
-          top: '50%',
-          left: '55%',
-          transform: 'translate(-50%,-50%)',
-        }}
-      />
-      <div
-        className="absolute rounded-full pointer-events-none"
-        style={{
-          width: 380,
-          height: 380,
-          border: '1px dashed rgba(255,182,193,0.06)',
-          top: '50%',
-          left: '55%',
-          transform: 'translate(-50%,-50%)',
-        }}
-      />
-    </div>
-  )
-}
+// Client-only: uses Framer Motion for the looping flyby animation
+const HeroFlybyAnimation = dynamic(
+  () => import('./HeroFlybyAnimation'),
+  { ssr: false, loading: () => <div className="w-full min-h-[320px]" /> }
+)
 
 export default function Hero() {
   return (
@@ -239,12 +125,12 @@ export default function Hero() {
 
         {/* ── Right: Animated airplane ── */}
         <div className="relative lg:flex hidden">
-          <HeroAirplane />
+          <HeroFlybyAnimation />
         </div>
 
         {/* Mobile airplane (smaller, centered below copy) */}
         <div className="lg:hidden relative h-48">
-          <HeroAirplane />
+          <HeroFlybyAnimation />
         </div>
       </div>
 
