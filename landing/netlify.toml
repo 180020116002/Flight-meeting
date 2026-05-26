@@ -1,5 +1,6 @@
 [build]
-  command   = "npm run build"
+  base      = "landing"
+  command   = "npm install && npm run build"
   publish   = ".next"
 
 [build.environment]
@@ -16,7 +17,3 @@
     X-XSS-Protection        = "1; mode=block"
     Referrer-Policy         = "strict-origin-when-cross-origin"
 
-[[redirects]]
-  from   = "/*"
-  to     = "/index.html"
-  status = 200
