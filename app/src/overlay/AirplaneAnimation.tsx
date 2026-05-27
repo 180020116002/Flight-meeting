@@ -25,28 +25,22 @@ const TRAIL_DOTS = [
 
 export function AirplaneAnimation({ meeting, settings, onComplete }: AirplaneAnimationProps) {
   const [pillVisible, setPillVisible] = useState(false)
-  const [planeGone, setPlaneGone] = useState(false)
 
-  const pillTimerRef    = useRef<NodeJS.Timeout | null>(null)
-  const planeGoneRef    = useRef<NodeJS.Timeout | null>(null)
-  const completeRef     = useRef<NodeJS.Timeout | null>(null)
+  const pillTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const planeGoneRef = useRef<NodeJS.Timeout | null>(null)
+  const completeRef  = useRef<NodeJS.Timeout | null>(null)
 
   const speed       = settings?.animationSpeed ?? 'normal'
   const color       = settings?.airplaneColor ?? '#FFB6C1'
   const animDuration = ANIMATION_DURATION[speed]
 
-  // Pill appears when the plane is roughly mid-screen (30% through)
-  const PILL_DELAY = animDuration * 0.28
-
   useEffect(() => {
-    // Show pill while plane is still flying
-    pillTimerRef.current = setTimeout(() => setPillVisible(true), PILL_DELAY)
+    // Pill visible immediately as plane enters
+    pillTimerRef.current = setTimeout(() => setPillVisible(true), 300)
 
-    // Plane exits screen — show floating pill for a few more seconds
+    // Plane exits — hide everything and complete
     planeGoneRef.current = setTimeout(() => setPlaneGone(true), animDuration)
-
-    // Call onComplete after pill has been visible for 5s post-flight
-    completeRef.current = setTimeout(() => onComplete(), animDuration + 5000)
+    completeRef.current  = setTimeout(() => onComplete(), animDuration + 400)
 
     return () => {
       if (pillTimerRef.current)  clearTimeout(pillTimerRef.current)
@@ -88,7 +82,7 @@ export function AirplaneAnimation({ meeting, settings, onComplete }: AirplaneAni
     <div className="overlay-root" style={{ pointerEvents: 'none' }}>
 
       {/* ── Flying group: pill + dots + plane all move together ── */}
-      {!planeGone && (
+      {true && (
         <div
           className={animClass}
           style={{
@@ -138,29 +132,6 @@ export function AirplaneAnimation({ meeting, settings, onComplete }: AirplaneAni
         </div>
       )}
 
-      {/* ── After plane exits: floating pill stays centered for a moment ── */}
-      {planeGone && (
-        <div
-          style={{
-            position:  'absolute',
-            bottom:    '20%',
-            left:      '50%',
-            transform: 'translateX(-50%)',
-          }}
-        >
-          <div
-            style={{
-              ...pillStyle,
-              opacity:   1,
-              transform: 'none',
-              animation: 'pill-float 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards',
-            }}
-          >
-            <span style={{ fontSize: '1rem' }}>✈️</span>
-            <span>{meeting.title} in {meeting.minutesUntilStart} min</span>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
