@@ -60,8 +60,6 @@ export default function ScrollFlyby() {
   const ctaOpacity = useTransform(smooth, [0.78, 0.96], [0, 1])
   const ctaY       = useTransform(smooth, [0.78, 0.96], [32, 0])
 
-  // "scroll to fly" label stays visible throughout the section
-
   // Sky glow follows the plane
   const skyGlow = useTransform(
     smooth,
@@ -106,16 +104,6 @@ export default function ScrollFlyby() {
               'linear-gradient(90deg, transparent 0%, rgba(255,182,193,0.08) 15%, rgba(255,182,193,0.08) 85%, transparent 100%)',
           }}
         />
-
-        {/* "scroll to fly" label — sticky, always visible */}
-        <div className="absolute top-12 left-1/2 -translate-x-1/2 text-center pointer-events-none">
-          <span
-            className="text-xs tracking-[0.22em] uppercase font-medium"
-            style={{ color: 'rgba(255,182,193,0.5)' }}
-          >
-            scroll to fly
-          </span>
-        </div>
 
         {/* ── Flying group ── */}
         <motion.div
