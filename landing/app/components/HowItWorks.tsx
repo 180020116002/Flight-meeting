@@ -238,23 +238,6 @@ export default function HowItWorks() {
           </div>
         </div>
 
-        {/* CTA nudge */}
-        <div className="mt-16 text-center">
-          <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.3)' }}>
-            Three steps. Two minutes. Zero regrets.
-          </p>
-          <a
-            href={process.env.NEXT_PUBLIC_DOWNLOAD_MAC ?? '#'}
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold transition-all duration-200 hover:scale-[1.04] hover:shadow-lg active:scale-[0.97]"
-            style={{
-              background: '#FFB6C1',
-              color: '#0A0A0B',
-              boxShadow: '0 4px 20px rgba(255,182,193,0.28)',
-            }}
-          >
-            Download Flyby — it&apos;s free
-          </a>
-        </div>
       </div>
     </section>
   )

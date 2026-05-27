@@ -59,15 +59,9 @@ export default function Footer() {
             Your next meeting deserves{' '}
             <span style={{ color: '#FFB6C1', fontStyle: 'italic' }}>an entrance.</span>
           </h2>
-          <p
-            className="text-base mb-8 max-w-sm mx-auto"
-            style={{ color: 'rgba(255,255,255,0.4)' }}
-          >
-            Free to download. Runs in seconds. Never miss a handoff again.
-          </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href={process.env.NEXT_PUBLIC_DOWNLOAD_MAC ?? '#'}
+              href={process.env.NEXT_PUBLIC_DOWNLOAD_MAC ?? 'https://github.com/180020116002/Flight-meeting/releases'}
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold transition-all duration-200 hover:scale-[1.04] hover:shadow-lg active:scale-[0.97]"
               style={{
                 background: '#FFB6C1',
@@ -81,7 +75,7 @@ export default function Footer() {
               Download for Mac
             </a>
             <a
-              href={process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? '#'}
+              href={process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases'}
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold border transition-all duration-200 hover:scale-[1.04] active:scale-[0.97]"
               style={{
                 background: 'transparent',
@@ -144,7 +138,7 @@ export default function Footer() {
             color: 'rgba(255,255,255,0.2)',
           }}
         >
-          &copy; {currentYear} Flyby. Free while in beta.
+          &copy; {currentYear} Flyby
         </div>
       </div>
     </footer>

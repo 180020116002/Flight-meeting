@@ -9,8 +9,8 @@ import {
 } from 'framer-motion'
 import AirplaneSVG from './AirplaneSVG'
 
-const MAC_URL = process.env.NEXT_PUBLIC_DOWNLOAD_MAC ?? '#'
-const WIN_URL = process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? '#'
+const MAC_URL = process.env.NEXT_PUBLIC_DOWNLOAD_MAC ?? 'https://github.com/180020116002/Flight-meeting/releases'
+const WIN_URL = process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases'
 
 // Dot config: left = near pill (dim), right = near tail (bright)
 const TRAIL_DOTS = [
