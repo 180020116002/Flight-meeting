@@ -10,11 +10,6 @@ const InteractiveDemo = dynamic(
   () => import('./components/InteractiveDemo'),
   { ssr: false }
 )
-const ScrollFlyby = dynamic(
-  () => import('./components/ScrollFlyby'),
-  { ssr: false }
-)
-
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-x-hidden">
@@ -23,9 +18,6 @@ export default function Home() {
 
       {/* ── Why section ──────────────────────────── */}
       <WhySection />
-
-      {/* ── Scroll-driven flyby + download CTA ───── */}
-      <ScrollFlyby />
 
       {/* ── Interactive demo ─────────────────────── */}
       <InteractiveDemo />

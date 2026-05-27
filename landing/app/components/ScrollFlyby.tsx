@@ -9,7 +9,7 @@ import {
 } from 'framer-motion'
 import AirplaneSVG from './AirplaneSVG'
 
-const EXE_URL = process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases/download/v1.0.0/Flyby-Setup-1.0.0.exe'
+const EXE_URL = process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases/download/v1.0.1/Flyby-Setup-1.0.1.exe'
 
 const TRAIL_DOTS = [
   { size: 3,   op: 0.18 },
