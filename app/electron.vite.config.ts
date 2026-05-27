@@ -38,7 +38,16 @@ export default defineConfig({
   },
   renderer: {
     root: resolve(__dirname, '.'),
-    plugins: [react()],
+    plugins: [
+      react(),
+      // Electron loads HTML via file:// — crossorigin blocks scripts/styles
+      {
+        name: 'remove-crossorigin',
+        transformIndexHtml(html: string) {
+          return html.replace(/\s+crossorigin/g, '')
+        }
+      }
+    ],
     build: {
       outDir: resolve(__dirname, 'out/renderer'),
       emptyOutDir: true,

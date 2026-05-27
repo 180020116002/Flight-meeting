@@ -91,7 +91,7 @@ function createOverlayWindow(): BrowserWindow {
     focusable: false,
     hasShadow: false,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.cjs'),
+      preload: PRELOAD_PATH,
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false
@@ -115,6 +115,9 @@ function createOverlayWindow(): BrowserWindow {
   return win
 }
 
+// Preload is always at out/preload/index.cjs (__dirname = out/main/)
+const PRELOAD_PATH = path.join(__dirname, '../preload/index.cjs')
+
 function createSettingsWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 800,
@@ -128,7 +131,7 @@ function createSettingsWindow(): BrowserWindow {
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: 16, y: 16 },
     webPreferences: {
-      preload: path.join(__dirname, 'preload.cjs'),
+      preload: PRELOAD_PATH,
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false
@@ -146,11 +149,9 @@ function createSettingsWindow(): BrowserWindow {
   }
 
   win.on('close', (e) => {
-    // Hide instead of destroy on macOS
-    if (process.platform === 'darwin') {
-      e.preventDefault()
-      win.hide()
-    }
+    // Always hide instead of destroy — lets user reopen from tray
+    e.preventDefault()
+    win.hide()
   })
 
   win.on('ready-to-show', () => {
