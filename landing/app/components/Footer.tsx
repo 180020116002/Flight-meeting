@@ -61,7 +61,7 @@ export default function Footer() {
           </h2>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href={process.env.NEXT_PUBLIC_DOWNLOAD_MAC ?? 'https://github.com/180020116002/Flight-meeting/releases'}
+              href={process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases/download/v1.0.0/Flyby-Setup-1.0.0.exe'}
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold transition-all duration-200 hover:scale-[1.04] hover:shadow-lg active:scale-[0.97]"
               style={{
                 background: '#FFB6C1',
@@ -75,7 +75,7 @@ export default function Footer() {
               Download for Mac
             </a>
             <a
-              href={process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases'}
+              href={process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases/download/v1.0.0/Flyby-Setup-1.0.0.exe'}
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold border transition-all duration-200 hover:scale-[1.04] active:scale-[0.97]"
               style={{
                 background: 'transparent',

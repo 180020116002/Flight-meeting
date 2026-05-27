@@ -9,8 +9,7 @@ import {
 } from 'framer-motion'
 import AirplaneSVG from './AirplaneSVG'
 
-const MAC_URL = process.env.NEXT_PUBLIC_DOWNLOAD_MAC ?? 'https://github.com/180020116002/Flight-meeting/releases'
-const WIN_URL = process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases/download/v1.0.0/Flyby-Setup-1.0.0.exe'
+const EXE_URL = process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases/download/v1.0.0/Flyby-Setup-1.0.0.exe'
 
 const TRAIL_DOTS = [
   { size: 3,   op: 0.18 },
@@ -61,8 +60,7 @@ export default function ScrollFlyby() {
   const ctaOpacity = useTransform(smooth, [0.78, 0.96], [0, 1])
   const ctaY       = useTransform(smooth, [0.78, 0.96], [32, 0])
 
-  // "scroll to fly" label fades out once user starts scrolling
-  const labelOpacity = useTransform(smooth, [0, 0.06], [1, 0])
+  // "scroll to fly" label stays visible throughout the section
 
   // Sky glow follows the plane
   const skyGlow = useTransform(
@@ -109,18 +107,15 @@ export default function ScrollFlyby() {
           }}
         />
 
-        {/* "scroll to fly" label — fades out when scrolling starts */}
-        <motion.div
-          className="absolute top-12 left-1/2 -translate-x-1/2 text-center pointer-events-none"
-          style={{ opacity: labelOpacity }}
-        >
+        {/* "scroll to fly" label — sticky, always visible */}
+        <div className="absolute top-12 left-1/2 -translate-x-1/2 text-center pointer-events-none">
           <span
             className="text-xs tracking-[0.22em] uppercase font-medium"
             style={{ color: 'rgba(255,182,193,0.5)' }}
           >
             scroll to fly
           </span>
-        </motion.div>
+        </div>
 
         {/* ── Flying group ── */}
         <motion.div
@@ -212,7 +207,7 @@ export default function ScrollFlyby() {
 
           <div className="flex flex-col sm:flex-row gap-3 items-center">
             <a
-              href={WIN_URL}
+              href={EXE_URL}
               className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold transition-all duration-200 hover:scale-[1.04] active:scale-[0.97]"
               style={{
                 background: '#FFB6C1',
@@ -227,7 +222,7 @@ export default function ScrollFlyby() {
             </a>
 
             <a
-              href={MAC_URL}
+              href={EXE_URL}
               className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold border transition-all duration-200 hover:scale-[1.04] active:scale-[0.97]"
               style={{
                 background: 'transparent',
