@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next'
 import { Instrument_Serif, Inter } from 'next/font/google'
+import dynamic from 'next/dynamic'
 import './globals.css'
+
+const PageLoadFlyby = dynamic(() => import('./components/PageLoadFlyby'), { ssr: false })
 
 const instrumentSerif = Instrument_Serif({
   weight: ['400'],
@@ -66,6 +69,7 @@ export default function RootLayout({
         className="bg-editorial-dark text-white antialiased font-sans"
         style={{ backgroundColor: '#0A0A0B' }}
       >
+        <PageLoadFlyby />
         {children}
       </body>
     </html>
