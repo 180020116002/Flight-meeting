@@ -8,8 +8,12 @@ directories:
 
 files:
   - out/**/*
-  - "!**/node_modules/**"
+  - node_modules/**/*
   - "!**/*.map"
+  - "!node_modules/**/test/**"
+  - "!node_modules/**/*.md"
+  - "!node_modules/**/*.ts"
+  - "!node_modules/**/__tests__/**"
 
 extraResources:
   - from: resources/

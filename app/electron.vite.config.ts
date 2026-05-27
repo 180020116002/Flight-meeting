@@ -1,30 +1,37 @@
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
+import { builtinModules } from 'module'
+
+// Only externalize electron + Node.js built-ins — everything else gets bundled
+// so the packaged .asar is fully self-contained.
+const NODE_EXTERNALS = ['electron', ...builtinModules, ...builtinModules.map(m => `node:${m}`)]
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin({ exclude: ['electron-store'] })],
     build: {
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'electron/main.ts')
         },
+        external: NODE_EXTERNALS,
         output: {
-          entryFileNames: '[name].cjs'
+          entryFileNames: '[name].cjs',
+          format: 'cjs'
         }
       }
     }
   },
   preload: {
-    plugins: [externalizeDepsPlugin()],
     build: {
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'electron/preload.ts')
         },
+        external: NODE_EXTERNALS,
         output: {
-          entryFileNames: '[name].cjs'
+          entryFileNames: '[name].cjs',
+          format: 'cjs'
         }
       }
     }
