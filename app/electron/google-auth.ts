@@ -31,19 +31,10 @@ interface StoreSchema {
 const store = new Store<StoreSchema>({ name: 'flyby-auth' })
 
 function getClientCredentials(): { clientId: string; clientSecret: string } {
-  const clientId = process.env.GOOGLE_CLIENT_ID
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
-
-  if (!clientId || !clientSecret) {
-    throw new Error(
-      'Missing Google OAuth credentials.\n' +
-      'Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables,\n' +
-      'or update electron/google-auth.ts with your credentials from:\n' +
-      'https://console.cloud.google.com/apis/credentials'
-    )
+  return {
+    clientId:     '822346688603-u8kruir86q61eef6jqgmvdb4bjuupk5o.apps.googleusercontent.com',
+    clientSecret: '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',
   }
-
-  return { clientId, clientSecret }
 }
 
 function createOAuth2Client(): OAuth2Client {
