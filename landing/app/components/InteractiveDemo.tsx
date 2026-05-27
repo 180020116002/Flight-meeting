@@ -1,54 +1,89 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
 import AirplaneSVG from './AirplaneSVG'
 
 const COLOR_CHIPS = [
-  { label: 'Pink', value: '#FFB6C1' },
-  { label: 'Blue', value: '#B6D4FF' },
-  { label: 'Mint', value: '#B6FFD9' },
-  { label: 'Peach', value: '#FFD4B6' },
+  { label: 'Pink',     value: '#FFB6C1' },
+  { label: 'Blue',     value: '#B6D4FF' },
+  { label: 'Mint',     value: '#B6FFD9' },
+  { label: 'Peach',    value: '#FFD4B6' },
   { label: 'Lavender', value: '#D4B6FF' },
 ]
 
 type AnimState = 'idle' | 'playing' | 'done'
 
-export default function InteractiveDemo() {
-  const [animState, setAnimState] = useState<AnimState>('idle')
-  const [selectedColor, setSelectedColor] = useState('#FFB6C1')
-  const [showPill, setShowPill] = useState(false)
-  const pillTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const doneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+const FLIGHT_DURATION = 4500   // ms
+const PILL_DELAY      = 900    // ms — pill appears mid-flight
+const REPLAY_DELAY    = 1800   // ms — auto-replay pause after done
 
-  function handleTrigger() {
-    if (animState === 'playing') return
+export default function InteractiveDemo() {
+  const [animState, setAnimState]     = useState<AnimState>('idle')
+  const [selectedColor, setSelectedColor] = useState('#FFB6C1')
+  const [showPill, setShowPill]       = useState(false)
+
+  const pillTimerRef   = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const doneTimerRef   = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const replayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Watch the section coming into view — trigger autoplay
+  const sectionRef = useRef<HTMLElement>(null)
+  const isInView = useInView(sectionRef, { amount: 0.5, once: false })
+
+  function clearAllTimers() {
+    if (pillTimerRef.current)   clearTimeout(pillTimerRef.current)
+    if (doneTimerRef.current)   clearTimeout(doneTimerRef.current)
+    if (replayTimerRef.current) clearTimeout(replayTimerRef.current)
+  }
+
+  function runFlight() {
     setAnimState('playing')
     setShowPill(false)
 
-    // Pill appears once the plane is mid-screen (at ~1s into a 4.5s flight)
-    pillTimerRef.current = setTimeout(() => setShowPill(true), 900)
+    pillTimerRef.current = setTimeout(() => setShowPill(true), PILL_DELAY)
+
     doneTimerRef.current = setTimeout(() => {
       setAnimState('done')
       setShowPill(false)
-    }, 4500)
+
+      // Auto-replay after a pause
+      replayTimerRef.current = setTimeout(() => {
+        setAnimState('idle')
+        // Small gap then kick off next flight
+        replayTimerRef.current = setTimeout(() => runFlight(), 200)
+      }, REPLAY_DELAY)
+    }, FLIGHT_DURATION)
+  }
+
+  function handleTrigger() {
+    if (animState === 'playing') return
+    clearAllTimers()
+    setAnimState('idle')
+    setTimeout(() => runFlight(), 50)
   }
 
   function handleReplay() {
+    clearAllTimers()
     setAnimState('idle')
-    setShowPill(false)
+    setTimeout(() => runFlight(), 50)
   }
 
-  // Cleanup on unmount
+  // Autoplay when scrolled into view
   useEffect(() => {
-    return () => {
-      if (pillTimerRef.current) clearTimeout(pillTimerRef.current)
-      if (doneTimerRef.current) clearTimeout(doneTimerRef.current)
+    if (isInView && animState === 'idle') {
+      const t = setTimeout(() => runFlight(), 400)
+      return () => clearTimeout(t)
     }
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInView])
+
+  // Cleanup on unmount
+  useEffect(() => () => clearAllTimers(), [])
 
   return (
     <section
+      ref={sectionRef}
       className="relative w-full section-pad overflow-hidden"
       style={{
         background:
@@ -119,7 +154,7 @@ export default function InteractiveDemo() {
             </div>
           </div>
 
-          {/* Demo canvas — the mock desktop */}
+          {/* Demo canvas */}
           <div
             className="relative overflow-hidden"
             style={{
@@ -128,7 +163,7 @@ export default function InteractiveDemo() {
                 'linear-gradient(135deg, #141418 0%, #0f0f14 50%, #131318 100%)',
             }}
           >
-            {/* Mock content lines (looks like a real document) */}
+            {/* Mock document content */}
             <div className="absolute inset-0 flex flex-col gap-3 p-8 pt-10 pointer-events-none opacity-25">
               <div className="h-4 rounded-sm w-2/3" style={{ background: 'rgba(255,255,255,0.15)' }} />
               <div className="h-3 rounded-sm w-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
@@ -150,22 +185,16 @@ export default function InteractiveDemo() {
                   initial={{ x: '-130px' }}
                   animate={{ x: '110vw' }}
                   exit={{ opacity: 0 }}
-                  transition={{
-                    duration: 4.5,
-                    ease: [0.12, 0, 0.48, 1],
-                  }}
+                  transition={{ duration: FLIGHT_DURATION / 1000, ease: [0.12, 0, 0.48, 1] }}
                 >
-                  {/* Airplane + trailing pill attached to its tail */}
                   <div className="relative inline-block">
-
-                    {/* Trailing group: pill + dots — anchored to LEFT of airplane (tail side) */}
+                    {/* Trailing pill + dots */}
                     <motion.div
                       className="absolute top-1/2 right-full -translate-y-1/2 flex items-center"
                       style={{ paddingRight: 8 }}
                       animate={{ opacity: showPill ? 1 : 0, x: showPill ? 0 : 18 }}
-                      transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+                      transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}
                     >
-                      {/* Pink notification pill */}
                       <div
                         className="flex items-center gap-2 rounded-full whitespace-nowrap mr-2"
                         style={{
@@ -182,7 +211,6 @@ export default function InteractiveDemo() {
                         <span>Meeting with Drew in 5 min</span>
                       </div>
 
-                      {/* Dots: dim on left (near pill) → bright on right (near tail) */}
                       <div className="flex items-center gap-[4px]">
                         {[
                           { size: 3,   op: 0.20 },
@@ -211,11 +239,9 @@ export default function InteractiveDemo() {
               )}
             </AnimatePresence>
 
-            {/* Idle state airplane (static, centered) */}
+            {/* Idle state */}
             {animState === 'idle' && (
-              <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20 pointer-events-none"
-              >
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20 pointer-events-none">
                 <AirplaneSVG color={selectedColor} size={90} />
               </div>
             )}
@@ -234,16 +260,12 @@ export default function InteractiveDemo() {
                   >
                     ✈️
                   </div>
-                  <p
-                    className="text-sm font-medium"
-                    style={{ color: 'rgba(255,255,255,0.5)' }}
-                  >
+                  <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
                     Did you see it?
                   </p>
                 </motion.div>
               </div>
             )}
-
           </div>
         </div>
 
@@ -251,10 +273,7 @@ export default function InteractiveDemo() {
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           {/* Color chips */}
           <div className="flex items-center gap-3 flex-wrap justify-center">
-            <span
-              className="text-xs font-medium mr-1"
-              style={{ color: 'rgba(255,255,255,0.35)' }}
-            >
+            <span className="text-xs font-medium mr-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
               Airplane color
             </span>
             {COLOR_CHIPS.map((chip) => (
@@ -276,7 +295,7 @@ export default function InteractiveDemo() {
             ))}
           </div>
 
-          {/* CTA / Replay */}
+          {/* Trigger / Replay button */}
           <div>
             {animState !== 'done' ? (
               <button
@@ -286,10 +305,7 @@ export default function InteractiveDemo() {
                 style={{
                   background: animState === 'playing' ? 'rgba(255,182,193,0.4)' : '#FFB6C1',
                   color: '#0A0A0B',
-                  boxShadow:
-                    animState === 'playing'
-                      ? 'none'
-                      : '0 4px 20px rgba(255,182,193,0.35)',
+                  boxShadow: animState === 'playing' ? 'none' : '0 4px 20px rgba(255,182,193,0.35)',
                   transform: animState === 'playing' ? 'scale(0.97)' : 'scale(1)',
                 }}
               >
@@ -331,11 +347,7 @@ export default function InteractiveDemo() {
           </div>
         </div>
 
-        {/* Footnote */}
-        <p
-          className="text-center text-xs mt-5"
-          style={{ color: 'rgba(255,255,255,0.22)' }}
-        >
+        <p className="text-center text-xs mt-5" style={{ color: 'rgba(255,255,255,0.22)' }}>
           Actual app behavior — this is exactly what happens on your screen.
         </p>
       </div>
