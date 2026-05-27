@@ -100,15 +100,15 @@
 /* ─── Animation Classes ──────────────────────────────────────────────────────── */
 
 .animate-airplane-fly {
-  animation: airplane-fly 5.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: airplane-fly 9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .animate-airplane-fly-slow {
-  animation: airplane-fly 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: airplane-fly 12s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .animate-airplane-fly-fast {
-  animation: airplane-fly 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: airplane-fly 6.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .animate-pill-float {

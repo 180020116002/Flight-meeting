@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { MeetingAlert, Settings } from '../shared/types'
 import { AirplaneSVG } from './AirplaneSVG'
-import { MeetingPill } from './MeetingPill'
 
 interface AirplaneAnimationProps {
   meeting: MeetingAlert
@@ -9,154 +8,157 @@ interface AirplaneAnimationProps {
   onComplete: () => void
 }
 
-interface ContrailDot {
-  id: number
-  x: number
-  y: number
-  size: number
-  animClass: string
-}
-
+// Slower durations (ms) — all speeds feel deliberate, not rushed
 const ANIMATION_DURATION: Record<Settings['animationSpeed'], number> = {
-  slow: 8000,
-  normal: 5500,
-  fast: 3500
+  slow: 12000,
+  normal: 9000,
+  fast: 6500,
 }
 
-const PILL_APPEAR_DELAY_MS = 1800
-const AUTO_DISMISS_AFTER_MS = 8000
+const TRAIL_DOTS = [
+  { size: 4,   op: 0.20 },
+  { size: 5,   op: 0.32 },
+  { size: 6,   op: 0.46 },
+  { size: 7,   op: 0.60 },
+  { size: 8,   op: 0.74 },
+]
 
 export function AirplaneAnimation({ meeting, settings, onComplete }: AirplaneAnimationProps) {
   const [pillVisible, setPillVisible] = useState(false)
-  const [airplaneVisible, setAirplaneVisible] = useState(true)
-  const [contrailDots, setContrailDots] = useState<ContrailDot[]>([])
-  const [dismissed, setDismissed] = useState(false)
-  const pillTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const autoDismissRef = useRef<NodeJS.Timeout | null>(null)
-  const completeTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const dotTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [planeGone, setPlaneGone] = useState(false)
 
-  const speed = settings?.animationSpeed ?? 'normal'
-  const color = settings?.airplaneColor ?? '#FFB6C1'
+  const pillTimerRef    = useRef<NodeJS.Timeout | null>(null)
+  const planeGoneRef    = useRef<NodeJS.Timeout | null>(null)
+  const completeRef     = useRef<NodeJS.Timeout | null>(null)
+
+  const speed       = settings?.animationSpeed ?? 'normal'
+  const color       = settings?.airplaneColor ?? '#FFB6C1'
   const animDuration = ANIMATION_DURATION[speed]
-  const animClass =
-    speed === 'slow'
-      ? 'animate-airplane-fly-slow'
-      : speed === 'fast'
-      ? 'animate-airplane-fly-fast'
-      : 'animate-airplane-fly'
+
+  // Pill appears when the plane is roughly mid-screen (30% through)
+  const PILL_DELAY = animDuration * 0.28
 
   useEffect(() => {
-    // Spawn contrail dots periodically during flight
-    let dotId = 0
-    const spawnDots = () => {
-      const dotCount = 3
-      const dots: ContrailDot[] = Array.from({ length: dotCount }, (_, i) => ({
-        id: dotId++,
-        x: Math.random() * 60 + 5,
-        y: 45 + Math.random() * 16 - 8,
-        size: Math.random() * 6 + 3,
-        animClass: `animate-contrail-${(i % 3) + 1}`
-      }))
+    // Show pill while plane is still flying
+    pillTimerRef.current = setTimeout(() => setPillVisible(true), PILL_DELAY)
 
-      setContrailDots((prev) => [...prev.slice(-9), ...dots])
-    }
+    // Plane exits screen — show floating pill for a few more seconds
+    planeGoneRef.current = setTimeout(() => setPlaneGone(true), animDuration)
 
-    // Spawn dots every 500ms during the airplane phase
-    let elapsed = 0
-    dotTimerRef.current = setInterval(() => {
-      elapsed += 400
-      if (elapsed < animDuration - 500) {
-        spawnDots()
-      } else {
-        clearInterval(dotTimerRef.current!)
-      }
-    }, 400)
-
-    // Show pill after delay
-    pillTimerRef.current = setTimeout(() => {
-      setAirplaneVisible(false)
-      setPillVisible(true)
-    }, PILL_APPEAR_DELAY_MS)
-
-    // Auto-dismiss pill
-    autoDismissRef.current = setTimeout(() => {
-      handlePillDismiss()
-    }, PILL_APPEAR_DELAY_MS + AUTO_DISMISS_AFTER_MS)
+    // Call onComplete after pill has been visible for 5s post-flight
+    completeRef.current = setTimeout(() => onComplete(), animDuration + 5000)
 
     return () => {
-      if (pillTimerRef.current) clearTimeout(pillTimerRef.current)
-      if (autoDismissRef.current) clearTimeout(autoDismissRef.current)
-      if (completeTimerRef.current) clearTimeout(completeTimerRef.current)
-      if (dotTimerRef.current) clearInterval(dotTimerRef.current)
+      if (pillTimerRef.current)  clearTimeout(pillTimerRef.current)
+      if (planeGoneRef.current)  clearTimeout(planeGoneRef.current)
+      if (completeRef.current)   clearTimeout(completeRef.current)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handlePillDismiss = () => {
-    if (dismissed) return
-    setDismissed(true)
-    if (autoDismissRef.current) clearTimeout(autoDismissRef.current)
+  const animClass =
+    speed === 'slow'  ? 'animate-airplane-fly-slow'  :
+    speed === 'fast'  ? 'animate-airplane-fly-fast'  :
+                        'animate-airplane-fly'
 
-    // Give dismiss animation time to play
-    completeTimerRef.current = setTimeout(() => {
-      onComplete()
-    }, 350)
-  }
-
-  // Vertical position: lower third of screen
+  // Vertical position — upper-lower band of screen
   const yPercent = 72
+
+  const pillStyle: React.CSSProperties = {
+    display:        'flex',
+    alignItems:     'center',
+    gap:            7,
+    padding:        '10px 22px 10px 16px',
+    background:     `rgba(255, 182, 193, 0.97)`,
+    borderRadius:   9999,
+    whiteSpace:     'nowrap',
+    fontWeight:     700,
+    fontSize:       '0.92rem',
+    color:          '#1a0a0f',
+    letterSpacing:  '-0.01em',
+    boxShadow:      '0 6px 32px rgba(255,182,193,0.5), 0 2px 12px rgba(0,0,0,0.28)',
+    opacity:        pillVisible ? 1 : 0,
+    transform:      pillVisible ? 'translateX(0)' : 'translateX(20px)',
+    transition:     pillVisible
+                      ? 'opacity 0.45s cubic-bezier(0.34,1.56,0.64,1), transform 0.45s cubic-bezier(0.34,1.56,0.64,1)'
+                      : 'none',
+  }
 
   return (
     <div className="overlay-root" style={{ pointerEvents: 'none' }}>
-      {/* Contrail dots */}
-      {airplaneVisible &&
-        contrailDots.map((dot) => (
-          <div
-            key={dot.id}
-            className={dot.animClass}
-            style={{
-              position: 'absolute',
-              left: `${dot.x}vw`,
-              top: `${yPercent + (dot.y - 50) * 0.4}%`,
-              width: dot.size,
-              height: dot.size,
-              borderRadius: '50%',
-              background: `${color}cc`,
-              pointerEvents: 'none'
-            }}
-          />
-        ))}
 
-      {/* Airplane */}
-      {airplaneVisible && (
+      {/* ── Flying group: pill + dots + plane all move together ── */}
+      {!planeGone && (
         <div
           className={animClass}
           style={{
-            position: 'absolute',
-            top: `${yPercent}%`,
-            left: 0,
+            position:      'absolute',
+            top:           `${yPercent}%`,
+            left:          0,
+            display:       'flex',
+            alignItems:    'center',
             pointerEvents: 'none',
-            willChange: 'transform, opacity'
+            willChange:    'transform, opacity',
           }}
         >
+          {/* Notification pill (left = trailing behind tail) */}
+          <div style={pillStyle}>
+            <span style={{ fontSize: '1rem' }}>✈️</span>
+            <span>{meeting.title} in {meeting.minutesUntilStart} min</span>
+          </div>
+
+          {/* Trail dots between pill and plane */}
+          <div
+            style={{
+              display:    'flex',
+              alignItems: 'center',
+              gap:        6,
+              marginLeft: 6,
+              opacity:    pillVisible ? 1 : 0,
+              transition: pillVisible ? 'opacity 0.4s ease 0.15s' : 'none',
+            }}
+          >
+            {TRAIL_DOTS.map((dot, i) => (
+              <div
+                key={i}
+                style={{
+                  width:        dot.size,
+                  height:       dot.size,
+                  borderRadius: '50%',
+                  background:   color,
+                  opacity:      dot.op,
+                  flexShrink:   0,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Airplane */}
           <AirplaneSVG color={color} size={72} />
         </div>
       )}
 
-      {/* Notification pill — centered horizontally, lower region */}
-      {pillVisible && (
+      {/* ── After plane exits: floating pill stays centered for a moment ── */}
+      {planeGone && (
         <div
           style={{
-            position: 'absolute',
-            bottom: '18%',
-            left: '50%',
+            position:  'absolute',
+            bottom:    '20%',
+            left:      '50%',
             transform: 'translateX(-50%)',
-            pointerEvents: 'auto',
-            zIndex: 10
           }}
         >
-          <MeetingPill meeting={meeting} onDismiss={handlePillDismiss} animateIn />
+          <div
+            style={{
+              ...pillStyle,
+              opacity:   1,
+              transform: 'none',
+              animation: 'pill-float 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards',
+            }}
+          >
+            <span style={{ fontSize: '1rem' }}>✈️</span>
+            <span>{meeting.title} in {meeting.minutesUntilStart} min</span>
+          </div>
         </div>
       )}
     </div>
