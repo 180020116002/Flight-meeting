@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 
-const EXE_URL = process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases/download/v1.0.1/Flyby-Setup-1.0.1.exe'
+const EXE_URL = process.env.NEXT_PUBLIC_DOWNLOAD_WIN ?? 'https://github.com/180020116002/Flight-meeting/releases/download/v1.0.2/Flyby-Setup-1.0.2.exe'
 
 // Client-only: uses Framer Motion for the looping flyby animation
 const HeroFlybyAnimation = dynamic(

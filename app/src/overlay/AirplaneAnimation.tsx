@@ -25,6 +25,7 @@ const TRAIL_DOTS = [
 
 export function AirplaneAnimation({ meeting, settings, onComplete }: AirplaneAnimationProps) {
   const [pillVisible, setPillVisible] = useState(false)
+  const [planeGone, setPlaneGone] = useState(false)
 
   const pillTimerRef = useRef<NodeJS.Timeout | null>(null)
   const planeGoneRef = useRef<NodeJS.Timeout | null>(null)
@@ -82,7 +83,7 @@ export function AirplaneAnimation({ meeting, settings, onComplete }: AirplaneAni
     <div className="overlay-root" style={{ pointerEvents: 'none' }}>
 
       {/* ── Flying group: pill + dots + plane all move together ── */}
-      {true && (
+      {!planeGone && (
         <div
           className={animClass}
           style={{
