@@ -106,10 +106,23 @@ export default function Footer() {
             Flyby
           </div>
 
-          {/* Center */}
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.28)' }}>
-            Made with&nbsp;🩷&nbsp;in Mumbai
-          </p>
+          {/* Center links */}
+          <div className="flex items-center gap-5">
+            <a
+              href="/privacy"
+              className="text-sm transition-colors hover:text-white"
+              style={{ color: 'rgba(255,255,255,0.28)' }}
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="/terms"
+              className="text-sm transition-colors hover:text-white"
+              style={{ color: 'rgba(255,255,255,0.28)' }}
+            >
+              Terms of Use
+            </a>
+          </div>
 
           {/* Social links */}
           <div className="flex items-center gap-1">
