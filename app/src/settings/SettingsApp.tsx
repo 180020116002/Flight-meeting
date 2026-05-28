@@ -125,6 +125,7 @@ export function SettingsApp() {
 
   const handleConnect = async () => {
     setAuthLoading(true)
+    const timeoutId = setTimeout(() => setAuthLoading(false), 3 * 60 * 1000)
     try {
       await window.electronAPI.auth.startOAuth()
       const status = await window.electronAPI.auth.getStatus()
@@ -132,6 +133,7 @@ export function SettingsApp() {
     } catch (err) {
       console.error('OAuth failed:', err)
     } finally {
+      clearTimeout(timeoutId)
       setAuthLoading(false)
     }
   }
